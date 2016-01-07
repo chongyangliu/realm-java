@@ -20,7 +20,7 @@ ext.coreArchiveDir = System.getenv("REALM_CORE_DOWNLOAD_DIR")
 // To obtain the ABI of the connected device, execute "adb shell getprop ro.product.cpu.abi"
 ext.buildTargetAbis = project.hasProperty('buildTargetABIs') ? project.getProperty('buildTargetABIs').split(',').collect {it.trim()} : null
 
-def commonCflags = [ '-Os', '-std=c++11' ]
+def commonCflags = [ '-Os', '-std=c++14' ]
 // LTO and debugging don't play well together
 if (!ext.debugBuild) {
     commonCflags += [ '-fvisibility=hidden', '-ffunction-sections', '-fdata-sections', '-flto' ]
@@ -307,6 +307,7 @@ targets.each { target ->
             "-j${Runtime.getRuntime().availableProcessors() * 2}",
             "-l${Runtime.getRuntime().availableProcessors()}",
             '-C', "${projectDir}/src",
+            "OBJECT_STORE_DIR=${projectDir}/object-store",
             "CC_IS=${clang?'clang':'gcc'}",
             "REALM_CFLAGS_COMMON=-Wno-variadic-macros -DREALM_HAVE_CONFIG -DPIC -I${project.coreDir}/include",
             "CFLAGS_ARCH=${(commonCflags + target.cflags).join(' ')}",
